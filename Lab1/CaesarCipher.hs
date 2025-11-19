@@ -1,14 +1,12 @@
-rotateLeft::Int->String->String
-rotateLeft n string = drop n string ++ take n string
+import Data.Char
 
-rotateRight::Int->String->String
-rotateRight n string = drop (k-n) string ++ take (k-n) string 
-    where k = length(string)
-
-list = ['A'..'Z']
+encode::Int->Char->[Char]
+encode n c 
+    | c >= 'A' && c <= 'Z' = [chr ((mod (ord 'Z' - ord 'A' - n + 1) 26) + ord 'A')]
+    | otherwise = [c]
 
 cipherEncode::Int->String->String
-cipherEncode n xs = h n xs ""
+cipherEncode n xs = h n xs "" n
     where
-        h n [] a = a
-        h n (x:xs) a = h n (tail xs) a:x
+        h n [] a k = a
+        h n xs a k = h n (tail(xs)) (a++(encode k (head(xs)))) (mod (k+n) 26)
