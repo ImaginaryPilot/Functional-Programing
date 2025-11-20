@@ -8,11 +8,8 @@ isPrime n
     | even n = False
     | otherwise = null [d | d<-[3,5..floor(sqrt(fromIntegral n))], mod n d == 0] 
 
-factors :: Int -> [Int]
-factors n = [d | d <- [1 .. floor(sqrt(fromIntegral n))], mod n d == 0]
-
 distinctPrimes:: Integer -> [Integer]
-distinctPrimes n = [p | p <- divisors n, isPrime p]
+distinctPrimes n = [p | p <- divisors (div n 2), isPrime p] ++ [n]
 
 divide::Integer->Integer->(Integer, Integer)
 divide m n = h m n 0
@@ -21,13 +18,16 @@ divide m n = h m n 0
             | mod m n == 0 = h (div m n) n (count+1)
             | otherwise = (m, count)
 
-totient::Integer->Integer
-totient n = h n (distinctPrimes n) n
+primeFactors::Integer->[(Integer,Integer)]
+primeFactors n = h n (distinctPrimes n) []
     where
-        h n _ k = k
-        h n xs k
-            | mod j n == 0 = h (fst(i)) (tail(xs)) (k^(snd i)*(j - 1))
-            | otherwise = h n (tail(xs)) k
-            where 
-                j = head(xs)
-                i = divide n j
+        h 1 ds xs = xs
+        h n ds xs 
+            | snd k == 0 = h n (tail ds) xs 
+            | otherwise = h (fst k) (tail ds) (xs++[(i,snd k)])
+            where
+                i = head (ds) 
+                k = divide n i 
+
+totient::Integer->Integer
+totient n = product [p^(e-1) * (p-1) | (p,e) <- primeFactors n]
