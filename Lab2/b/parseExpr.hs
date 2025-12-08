@@ -60,6 +60,9 @@ parseF ("(":toks) =
     in if not (null toks') && head toks' == ")"
         then (x, tail toks')
         else abort "error: missing parenthesis"
+parseF ("-":toks) =
+    let (x, toks') = parseF toks
+    in (-x, toks')
 parseF (tok:toks)
   | isDigit (head tok) =  (read tok, toks)
   | otherwise          =  abort $ printf "Error, unexpected '%s'." tok
