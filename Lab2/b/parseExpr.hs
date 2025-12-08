@@ -6,11 +6,14 @@ import Debug
     E’ -> + T E’
     E’ -> - T E’
     E’ -> <empty string>
-    T -> F T’
-    T’ -> * F T’
-    T’ -> / F T’
-    T’ -> % F T’
+    T -> G T’
+    T’ -> * G T’
+    T’ -> / G T’
+    T’ -> % G T’
     T’ -> <empty string>
+    G -> F G'
+    G' -> ^ F G'
+    G' -> <empty string>
     F -> ( E )
     F -> <integer>
 -}
@@ -22,7 +25,7 @@ lexer :: String -> Tokens
 lexer [] = []
 lexer str@(c:cs)
   | elem c "\n\t "  = lexer cs -- skip whitespace
-  | elem c "*/+-%()"  = [c]:(lexer cs)
+  | elem c "*/+-%()^"  = [c]:(lexer cs)
   | isDigit c    = takeWhile isDigit str : lexer(dropWhile isDigit str)
   | otherwise    = abort $ printf "illegal character '%c' found." c
 
@@ -39,19 +42,28 @@ parseE' (acc, "-":toks) =
 parseE' (acc,toks)     = (acc, toks)
 
 parseT :: Tokens-> (Integer,Tokens)
-parseT toks = parseT' $ parseF toks
+parseT toks = parseT' $ parseG toks
 
 parseT' :: (Integer,Tokens) -> (Integer,Tokens)
 parseT' (acc, "*":toks) = 
-    let (x, toks') = parseF toks
+    let (x, toks') = parseG toks
     in parseT' (acc * x, toks')
 parseT' (acc, "/":toks) = 
-    let (x, toks') = parseF toks
+    let (x, toks') = parseG toks
     in parseT' (div acc x, toks')
 parseT' (acc, "%":toks) = 
-    let (x, toks') = parseF toks
+    let (x, toks') = parseG toks
     in parseT' (mod acc x, toks')    
 parseT' (acc,toks)     = (acc, toks)
+
+parseG :: Tokens-> (Integer,Tokens)
+parseG toks = parseG' $ parseF toks
+
+parseG' :: (Integer,Tokens) -> (Integer,Tokens)
+parseG' (acc, "^":toks) = 
+    let (x, toks') = parseG toks
+    in parseG' (acc ^ x, toks') 
+parseG' (acc,toks)     = (acc, toks)
 
 parseF :: Tokens -> (Integer,Tokens)
 parseF []     =  abort "error: unexpected end of input."
