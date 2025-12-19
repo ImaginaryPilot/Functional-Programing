@@ -1,0 +1,10 @@
+# GHC build artifacts
+*.hi
+*.o
+
+# Cabal / Stack build directories
+dist/
+dist-newstyle/
+.stack-work/
+
+testLexer
