@@ -29,3 +29,8 @@ instance Show Program where
 -- show a list without enclosing [ ]
 showLst :: Show a => [a] -> String
 showLst = tail.init.show
+
+type Substitution = (String,Argument)
+type Unifier = [Substitution]
+type Clause = [(FuncApplication,Bool)]
+type Clauses = [Clause]

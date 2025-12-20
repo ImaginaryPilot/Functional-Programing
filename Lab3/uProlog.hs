@@ -3,9 +3,10 @@ import System.IO
 import Types
 import Parser
 import Analysis
+import Clause
 
-process :: String -> Program
-process str = (analyse.parseProgram) str
+process :: String -> Clauses
+process str = (programToClauses.analyse.parseProgram) str
 
 main = do
   args <- getArgs
