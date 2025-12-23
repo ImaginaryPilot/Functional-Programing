@@ -4,9 +4,10 @@ import Types
 import Parser
 import Analysis
 import Clause
+import Resolution
 
 process :: String -> Clauses
-process str = (programToClauses.analyse.parseProgram) str
+process str = (resolveClauses.programToClauses.analyse.parseProgram) str
 
 main = do
   args <- getArgs
